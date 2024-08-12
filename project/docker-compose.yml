@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  service1:
+    build:
+      context: ./service1
+    container_name: service1
+    ports:
+      - "9090:9090"
+    environment:
+      HTTP_ADDR: ":9090"
