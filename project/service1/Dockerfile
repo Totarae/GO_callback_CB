@@ -14,5 +14,8 @@ RUN ls -l /app
 # Expose port 9090
 EXPOSE 9090
 
-# Run the service
-CMD ["/service1"]
+# Set environment variables (optional, if needed by the app)
+# ENV HTTP_ADDR="0.0.0.0:9090"
+
+# Run the service with explicit binding
+CMD ["/service1", "-http", "0.0.0.0:9090"]

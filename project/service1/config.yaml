@@ -1,0 +1,8 @@
+database:
+  addr: "localhost"
+  port: 5432
+  user: "gas_user"
+  password: "solid_passwd"
+  dbname: "liquid_database"
+  pool_size: 10
+  PG_MIGRATIONS_PATH: "file://./pg/migrations/"
