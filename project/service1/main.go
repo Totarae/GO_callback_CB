@@ -12,12 +12,12 @@ import (
 	"project/service1/config"
 	"project/service1/handler"
 	"project/service1/pg"
+	"project/service1/repository"
 	"syscall"
 )
 
 func main() {
 	http.HandleFunc("/", handler.HelloHandler)
-	http.HandleFunc("/callback", handler.CallbackHandler)
 
 	// Create a server with timeouts for better performance
 	server := &http.Server{
@@ -43,6 +43,12 @@ func main() {
 			log.Printf("runPgMigrations failed: %w", err)
 		}
 	}
+
+	objectRepo := repository.New(pgDB)
+
+	handlerRegister := handler.LastSeenCallback{ObjectRepoInterface: objectRepo}
+
+	http.HandleFunc("/callback", handlerRegister.CallbackHandler)
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {

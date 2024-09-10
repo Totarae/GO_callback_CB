@@ -1,16 +1,23 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"project/service1/model"
+	"project/service1/repository"
 	"strconv"
+	"time"
 )
 
-func CallbackHandler(writer http.ResponseWriter, request *http.Request) {
+type LastSeenCallback struct {
+	ObjectRepoInterface repository.ObjectRepoInterface
+}
+
+func (h *LastSeenCallback) CallbackHandler(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != http.MethodPost {
 		http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -39,6 +46,22 @@ func CallbackHandler(writer http.ResponseWriter, request *http.Request) {
 
 	// Process the callback data (for now, just print it)
 	log.Printf("Received callback data: %v\n", requestContent)
+
+	ctx := context.Background()
+
+	var callBack model.DBObject
+
+	for i := range requestContent.ObjectIDs {
+		callBack.LastSeen = time.Now()
+		callBack.ID = requestContent.ObjectIDs[i]
+
+		err = h.ObjectRepoInterface.Upsert(ctx, &callBack)
+
+		if err != nil {
+			log.Printf("Failed to insert record: %v", err)
+			return
+		}
+	}
 
 	_, err = writer.Write([]byte(strconv.Itoa(len(requestContent.ObjectIDs))))
 	if err != nil {
