@@ -47,9 +47,11 @@ func (h *LastSeenCallback) CallbackHandler(writer http.ResponseWriter, request *
 	// Process the callback data (for now, just print it)
 	log.Printf("Received callback data: %v\n", requestContent)
 
-	ctx := context.Background()
-
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	var callBack model.DBObject
+	startTime := time.Now()
+	savedCount := 0
 
 	for i := range requestContent.ObjectIDs {
 		callBack.LastSeen = time.Now()
@@ -57,16 +59,29 @@ func (h *LastSeenCallback) CallbackHandler(writer http.ResponseWriter, request *
 
 		err = h.ObjectRepoInterface.Upsert(ctx, &callBack)
 
+		//err = h.ObjectRepoInterface.Create(ctx, &callBack)
+
 		if err != nil {
 			log.Printf("Failed to insert record: %v", err)
-			return
+			continue
+		} else {
+			log.Printf("Current elem: %d", i)
 		}
+
+		savedCount++
+	}
+	log.Printf("Insert duration: %v", time.Since(startTime))
+
+	writer.WriteHeader(http.StatusCreated)
+	writer.Header().Add("Content-Type", "application/json")
+	_, err = writer.Write([]byte(strconv.Itoa(savedCount)))
+
+	if err != nil {
+		log.Printf("Failed to save response: %v", savedCount)
+	} else {
+		log.Printf("Total processed: %d", savedCount)
 	}
 
-	_, err = writer.Write([]byte(strconv.Itoa(len(requestContent.ObjectIDs))))
-	if err != nil {
-		return
-	}
 }
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {

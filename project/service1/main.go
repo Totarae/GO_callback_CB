@@ -17,6 +17,12 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	http.HandleFunc("/", handler.HelloHandler)
 
 	// Create a server with timeouts for better performance
@@ -61,6 +67,8 @@ func main() {
 	<-sig
 
 	fmt.Println("closing")
+
+	return nil
 
 }
 
