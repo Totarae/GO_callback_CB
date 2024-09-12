@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   db:
-    image: postgres:12.3
+    image: postgres:latest
     #image: postgres #use latest image
     ports:
      - 5432:5432 #enable external ports
@@ -13,7 +13,7 @@ services:
      - POSTGRES_USER=gas_user #superuser name
      - POSTGRES_DB=liquid_database
     volumes: 
-     - solid_database_data:/var/lib/postgresql/data #persist data even if container shuts down
+     - liquid_database_data:/var/lib/postgresql/data #persist data even if container shuts down
 
 volumes:
-  solid_database_data:
+  liquid_database_data:
