@@ -57,9 +57,9 @@ func (h *LastSeenCallback) CallbackHandler(writer http.ResponseWriter, request *
 		callBack.LastSeen = time.Now()
 		callBack.ID = requestContent.ObjectIDs[i]
 
-		err = h.ObjectRepoInterface.Upsert(ctx, &callBack)
+		//err = h.ObjectRepoInterface.CustomUpsert(ctx, &callBack)
 
-		//err = h.ObjectRepoInterface.Create(ctx, &callBack)
+		err = h.ObjectRepoInterface.Create(ctx, &callBack)
 
 		if err != nil {
 			log.Printf("Failed to insert record: %v", err)
