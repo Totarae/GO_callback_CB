@@ -11,5 +11,4 @@ type ObjectRepoInterface interface {
 	Update(ctx context.Context, lastSeen *model.DBObject) error
 	Delete(ctx context.Context, id uint) error
 	Upsert(ctx context.Context, lastSeen *model.DBObject) error
-	CustomUpsert(ctx context.Context, lastSeen *model.DBObject) error
 }
